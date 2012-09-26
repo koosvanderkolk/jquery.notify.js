@@ -50,6 +50,17 @@
         if(options.text){
             inner.append($("<div/>").addClass("text").text(options.text));
         }
+        
+        //function to cleanup the notification
+        var cleanupFunction = function(){
+            li.fadeTo('slow', 0, function(){
+                $(this).slideUp('fast', function(){
+                    $(this).remove();
+                    $("#notifications:empty").remove();
+                });
+            });
+        };
+        
 
         // bind event handlers
         with(li){
@@ -60,21 +71,20 @@
                 $(this).css('cursor', below.css('cursor'));
             });
             click(function(e){
+              if (options.closeOnClick === true) {
+                cleanupFunction();
+              }else{
                 $(this).parent().below(e.pageX, e.pageY).click();
+              } 
             });
         }
 
         // create timeout to fadeout and cleanup
-        setTimeout(function(){
-            li.fadeTo('slow', 0, function(){
-                $(this).slideUp('fast', function(){
-                    $(this).remove();
-                    $("#notifications:empty").remove();
-                });
-            });
-        }, options.delay || 5000);
+        if (options.sticky !== true) {
+          setTimeout(cleanupFunction, options.delay || 5000);
+        }        
 
-        li.appendTo($._notify.getContainer());
+        li.appendTo($._notify.getContainer(options));
         if($.boxModel){
             $.jcorners(inner, {radius:6});
         } else {
@@ -84,11 +94,11 @@
     };
 
     $._notify = {
-        getContainer: function(){
+        getContainer: function(options){
             // get or create notifications list
             var c = $("#notifications");
             if(!c.length){
-                c = $('<ul id="notifications"></ul>').appendTo(document.body);
+                c = $('<ul id="notifications"></ul>').appendTo(options.parentElement || document.body);
             }
             return c;
         },

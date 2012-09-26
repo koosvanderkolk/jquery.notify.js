@@ -50,7 +50,11 @@
         if(options.text){
             inner.append($("<div/>").addClass("text").text(options.text));
         }
-        
+
+        if(options.closeOnClick){
+            inner.append($("<div>x</div>").addClass("close"));
+        }
+
         //function to cleanup the notification
         var cleanupFunction = function(){
             li.fadeTo('slow', 0, function(){
@@ -60,7 +64,7 @@
                 });
             });
         };
-        
+
 
         // bind event handlers
         with(li){
@@ -75,14 +79,14 @@
                 cleanupFunction();
               }else{
                 $(this).parent().below(e.pageX, e.pageY).click();
-              } 
+              }
             });
         }
 
         // create timeout to fadeout and cleanup
         if (options.sticky !== true) {
           setTimeout(cleanupFunction, options.delay || 5000);
-        }        
+        }
 
         li.appendTo($._notify.getContainer(options));
         if($.boxModel){
